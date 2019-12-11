@@ -1,7 +1,7 @@
 {
-  "name": "lab-06",
+  "name": "lab-07-back-end",
   "version": "1.0.0",
-  "description": "Number and name of feature: Lab: 06 - Node, npm, and Express",
+  "description": "Number and name of feature: Lab: 07 - API",
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -9,17 +9,18 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/shingoed/lab-06.git"
+    "url": "git+https://github.com/shingoed/lab-07-back-end.git"
   },
   "author": "Shingo Nakajima",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/shingoed/lab-06/issues"
+    "url": "https://github.com/shingoed/lab-07-back-end/issues"
   },
-  "homepage": "https://github.com/shingoed/lab-06#readme",
+  "homepage": "https://github.com/shingoed/lab-07-back-end#readme",
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "superagent": "^5.1.2"
   }
 }

@@ -1,8 +1,8 @@
-Number and name of feature: Lab: 06 - Node, npm, and Express
+Number and name of feature: Lab 07: APIs
 
-Estimate of time needed to complete: 3hrs
+Estimate of time needed to complete: 4hrs
 
-Start time: 9:20am
+Start time: 10:00am
 
 Finish time: 13:30
 
