@@ -1,70 +1,75 @@
 'use strict'
 
 const express = require('express');
+const app = express();
+
+const superagent = require('superagent')
+
 require('dotenv').config();
 const cors = require('cors')
 
-const app = express();
-const PORT = process.env.PORT || 3001;
 app.use(cors());
 
+const PORT = process.env.PORT || 3001;
+
+
+// route
 app.get('/location', (request, response) => {
-  let city = request.query.data;
+  const city = request.query.data;
+  try {
+    searchLatToLong(city, response);
 
-  let locationObj = searchLatToLong(city);
-
-  response.send(locationObj);
+    // console.log('I am in location w locationData = :', locationData);
+    //   response.send(locationData);
+  }
+  catch (error) {
+    console.error(error);
+    response.status(500).send('so sorry, something is not working on our end')
+  }
 })
 
-function searchLatToLong(city) {
-  const geoData = require('./data/geo.json');
-  const geoDataResults = geoData.results[0]
+function searchLatToLong(location, response) {
+  let url = `https://maps.googleapis.com/maps/api/geocode/json?address=${location}&key=${process.env.GEOCODE_API_KEY}`
 
-  const locationObj = new Location(city, geoDataResults);
-  return locationObj;
+  return superagent.get(url)
+    .then(results => {
+      console.log(results.body)
+      const locationObj = new Location(location, results.body);
+
+      response.send(locationObj);
+
+    });
 }
-
-function Location(city, geoDataResults) {
-  this.search_query = city;
-  this.formatted_query = geoDataResults.formatted_query;
-  this.latitude = geoDataResults.geometry.location.lat;
-  this.longitude = geoDataResults.geometry.location.lng;
-}
-
-// weather
 
 app.get('/weather', (request, response) => {
+  let latitude = request.query.data.latitude
+  let longitude = request.query.data.longitude
 
-  let weatherObj = searchWeather();
+  const url = `https://api.darksky.net/forecast/${process.env.WEATHER_API_KEY}/${latitude},${longitude}`
 
-  response.send(weatherObj);
+  superagent.get(url)
+    .then(results => {
+      console.log(results.body);
+      let dailyArray = results.body.daily.data
+      const dailyWeatherArray = dailyArray.map(day => {
+        return new Weather(day);
+      })
+      response.send(dailyWeatherArray);
+    })
+    .catch(error => console.error(error));
 })
 
-function searchWeather() {
-  const darkskyData = require('./data/darksky.json');
-  const darkskyDataResults = darkskyData.daily.data
-  const weatherArray = []
-
-  for (let i = 0; i < darkskyDataResults.length; i++) {
-
-    weatherArray.push(new Weather(darkskyDataResults[i]))
-  }
-  return weatherArray;
+function Location(request, geoData) {
+  this.search_query = request;
+  this.formatted_query = geoData.results[0].formatted_address;
+  this.latitude = geoData.results[0].geometry.location.lat;
+  this.longitude = geoData.results[0].geometry.location.lng;
 }
 
-function Weather(darkskyDataResults) {
-  this.time = darkskyDataResults.time
-  this.forecast = darkskyDataResults.summary
+function Weather(request, darkskyData) {
+
 }
 
-// 500
-// app.get('*', (request, response) => {
-//   response.status(500).send('Sorry, something went wrong');
-
-//   let errorQuery = error()
-// }
-
-// function error() { }
 
 // 404
 app.get('*', (request, response) => {
