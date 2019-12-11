@@ -1,0 +1,25 @@
+{
+  "name": "lab-06",
+  "version": "1.0.0",
+  "description": "Number and name of feature: Lab: 06 - Node, npm, and Express",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shingoed/lab-06.git"
+  },
+  "author": "Shingo Nakajima",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/shingoed/lab-06/issues"
+  },
+  "homepage": "https://github.com/shingoed/lab-06#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1"
+  }
+}
