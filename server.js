@@ -97,18 +97,13 @@ function getMoviesData(locationObj, response) {
   superagent.get(url)
     .then(superResults => {
       let moviesArr = superResults.body.results;
-      console.log(moviesArr)
-      // console.log(moviesArr.slice(0, 20))
-      let getTwentyArr = moviesArr.slice(0, 20).map(value => new Movie(value));
-      console.log(getTwentyArr)
+      let finalArr = moviesArr.slice(0, 20).map(value => new Movie(value));
 
-      // const finalMoviesArr = getTwentyArr.map(value => new Movie(value))
-      response.send(getTwentyArr)
+      response.send(finalArr)
 
     })
     .catch(error => console.error(error));
 }
-
 
 function Movie(obj) {
   this.title = obj.title
@@ -118,10 +113,34 @@ function Movie(obj) {
   this.image_url = `https://image.tmdb.org/t/p/w500${obj.poster_path}`
   this.popularity = obj.popularity
   this.released_on = obj.release_date
-
 }
 
+app.get('/yelp', (request, response) => {
+  let locationObj = request.query.data;
+  getYelpData(locationObj, response);
+})
 
+function getYelpData(locationObj, response) {
+  const url = `https://api.yelp.com/v3/businesses/search?latitude=${locationObj.latitude}&longitude=${locationObj.longitude}`;
+  superagent.get(`${url}`).set('Authorization', `Bearer ${process.env.YELP_API_KEY}`)
+    .then(yelpResults => {
+      // console.log(yelpResults.body.businesses)
+      let yelpArr = yelpResults.body.businesses;
+      // console.log(yelpArr)
+      let finalYelpArr = yelpArr.slice(0, 20).map(value => new Yelp(value))
+      response.send(finalYelpArr)
+
+    })
+    .catch(error => console.error(error));
+}
+
+function Yelp(obj) {
+  this.name = obj.name
+  this.image_url = obj.image_url
+  this.price = obj.price
+  this.rating = obj.rating
+  this.url = obj.url
+}
 
 
 // 404
