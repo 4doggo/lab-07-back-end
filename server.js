@@ -49,10 +49,10 @@ app.get('/weather', (request, response) => {
 
   superagent.get(url)
     .then(results => {
-      console.log(results.body);
+      // console.log(results.body);
       let dailyArray = results.body.daily.data
       const dailyWeatherArray = dailyArray.map(day => {
-        return new Weather(day);
+        return new Weather(day.summary, day.time);
       })
       response.send(dailyWeatherArray);
     })
@@ -66,9 +66,39 @@ function Location(request, geoData) {
   this.longitude = geoData.results[0].geometry.location.lng;
 }
 
-function Weather(request, darkskyData) {
+function Weather(forecast, time) {
+  this.time = new Date(time * 1000).toDateString();
+  this.forecast = forecast
+}
+
+app.get('/events', (request, response) => {
+  let locationObj = request.query.data;
+  getEventsData(locationObj, response);
+}
+)
+
+function getEventsData(locationObj, response) {
+  let url = `http://api.eventful.com/json/events/search?location=${locationObj.search_query}&app_key=${process.env.EVENTFUL_API_KEY}`
+
+  superagent.get(url)
+    .then(results => {
+      let eventsArr = JSON.parse(results.text).events.event
+      const finalEventsArr = eventsArr.map(value => new Event(value))
+      response.send(finalEventsArr);
+    })
+    .catch(error => console.error(error));
+}
+
+function Event(obj) {
+  this.link = obj.url
+  this.name = obj.title
+  this.event_date = obj.start_time
+  this.summary = obj.description
 
 }
+
+
+
 
 
 // 404
