@@ -12,15 +12,10 @@ app.use(cors());
 
 const PORT = process.env.PORT || 3001;
 
-
-// route
 app.get('/location', (request, response) => {
   const city = request.query.data;
   try {
     searchLatToLong(city, response);
-
-    // console.log('I am in location w locationData = :', locationData);
-    //   response.send(locationData);
   }
   catch (error) {
     console.error(error);
@@ -33,11 +28,8 @@ function searchLatToLong(location, response) {
 
   return superagent.get(url)
     .then(results => {
-      console.log(results.body)
       const locationObj = new Location(location, results.body);
-
       response.send(locationObj);
-
     });
 }
 
@@ -49,7 +41,6 @@ app.get('/weather', (request, response) => {
 
   superagent.get(url)
     .then(results => {
-      // console.log(results.body);
       let dailyArray = results.body.daily.data
       const dailyWeatherArray = dailyArray.map(day => {
         return new Weather(day.summary, day.time);
@@ -94,9 +85,41 @@ function Event(obj) {
   this.name = obj.title
   this.event_date = obj.start_time
   this.summary = obj.description
-
 }
 
+app.get('/movies', (request, response) => {
+  let locationObj = request.query.data;
+  getMoviesData(locationObj, response);
+})
+
+function getMoviesData(locationObj, response) {
+  let url = `https://api.themoviedb.org/3/search/movie?api_key=${process.env.MOVIEDB_API_KEY}&query=${locationObj.search_query}`
+  superagent.get(url)
+    .then(superResults => {
+      let moviesArr = superResults.body.results;
+      console.log(moviesArr)
+      // console.log(moviesArr.slice(0, 20))
+      let getTwentyArr = moviesArr.slice(0, 20).map(value => new Movie(value));
+      console.log(getTwentyArr)
+
+      // const finalMoviesArr = getTwentyArr.map(value => new Movie(value))
+      response.send(getTwentyArr)
+
+    })
+    .catch(error => console.error(error));
+}
+
+
+function Movie(obj) {
+  this.title = obj.title
+  this.overview = obj.overview
+  this.average_votes = obj.vote_average
+  this.total_votes = obj.vote_count
+  this.image_url = `https://image.tmdb.org/t/p/w500${obj.poster_path}`
+  this.popularity = obj.popularity
+  this.released_on = obj.release_date
+
+}
 
 
 
