@@ -7,6 +7,8 @@ const superagent = require('superagent')
 
 require('dotenv').config();
 const cors = require('cors')
+const client = require('./client');
+
 
 app.use(cors());
 
@@ -45,6 +47,7 @@ app.get('/weather', (request, response) => {
       const dailyWeatherArray = dailyArray.map(day => {
         return new Weather(day.summary, day.time);
       })
+      console.log(dailyWeatherArray)
       response.send(dailyWeatherArray);
     })
     .catch(error => console.error(error));
@@ -124,9 +127,7 @@ function getYelpData(locationObj, response) {
   const url = `https://api.yelp.com/v3/businesses/search?latitude=${locationObj.latitude}&longitude=${locationObj.longitude}`;
   superagent.get(`${url}`).set('Authorization', `Bearer ${process.env.YELP_API_KEY}`)
     .then(yelpResults => {
-      // console.log(yelpResults.body.businesses)
       let yelpArr = yelpResults.body.businesses;
-      // console.log(yelpArr)
       let finalYelpArr = yelpArr.slice(0, 20).map(value => new Yelp(value))
       response.send(finalYelpArr)
 
@@ -142,8 +143,6 @@ function Yelp(obj) {
   this.url = obj.url
 }
 
-
-// 404
 app.get('*', (request, response) => {
   response.status(404).send('Page not found');
 })
